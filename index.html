@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B9 Set Application | Scribble Works</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #727bcf;
+            --success: #06cc91;
+            --accent: #3ea0ad;
+            --error: #f472b6;
+            --space-deep: #020617;
+            --space-glow: #1e1b4b;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            margin: 0; padding: 0; height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            background: radial-gradient(circle at center, var(--space-glow), var(--space-deep));
+            overflow: hidden; position: relative;
+        }
+
+        .stars-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+        .star { position: absolute; background: white; border-radius: 50%; opacity: 0.5; animation: twinkle var(--duration) infinite ease-in-out; }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .cosmic-waves-container { position: absolute; bottom: 0; width: 100%; height: 50vh; background: linear-gradient(to bottom, transparent, rgba(114, 123, 207, 0.3)); z-index: 1; }
+        .waves { position: absolute; top: -120px; left: 0; width: 100%; height: 120px; }
+        .parallax > use { animation: move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite; }
+        .parallax > use:nth-child(1) { animation-delay: -2s; animation-duration: 7s; fill: rgba(114, 123, 207, 0.2); }
+        .parallax > use:nth-child(2) { animation-delay: -3s; animation-duration: 10s; fill: rgba(62, 160, 173, 0.3); }
+        .parallax > use:nth-child(3) { animation-delay: -4s; animation-duration: 13s; fill: rgba(114, 123, 207, 0.4); }
+        .parallax > use:nth-child(4) { animation-delay: -5s; animation-duration: 20s; fill: rgba(114, 123, 207, 0.6); }
+
+        @keyframes move-forever { 0% { transform: translate3d(-90px,0,0); } 100% { transform: translate3d(85px,0,0); } }
+
+        .game-container {
+            position: relative; z-index: 10; width: 90%; max-width: 480px;
+            background: rgba(255, 255, 255, 0.08); padding: 2.5rem; border-radius: 35px;
+            box-shadow: 0 0 30px rgba(114, 123, 207, 0.4); text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(15px); color: white;
+        }
+
+        .grade-tag { background: var(--accent); color: white; padding: 4px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 900; margin-left: 10px; }
+        h1 { font-family: 'Fredoka', sans-serif; font-size: 1.5rem; margin: 0; display: flex; align-items: center; justify-content: center; }
+        
+        .stats-row { display: flex; justify-content: center; gap: 15px; margin: 15px 0; }
+        .pill { background: rgba(255, 255, 255, 0.1); padding: 6px 14px; border-radius: 50px; font-weight: 800; font-size: 0.8rem; color: #cbd5e1; }
+
+        .question-card { background: rgba(0, 0, 0, 0.3); border-radius: 24px; padding: 1.5rem 1rem; margin: 15px 0; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .instruction { color: var(--accent); font-weight: 800; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 2px; display: block; margin-bottom: 8px; }
+        .number-display { font-size: 1rem; line-height: 1.5; font-weight: 600; text-align: left; }
+
+        input[type="text"] {
+            width: 100%; box-sizing: border-box; padding: 15px; font-size: 1.2rem;
+            border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 18px;
+            text-align: center; outline: none; background: rgba(255, 255, 255, 0.05);
+            color: white; margin-bottom: 1rem;
+        }
+        img{float: left;}
+        button {
+            background: var(--primary); color: white; border: none; padding: 18px;
+            font-size: 1.1rem; font-weight: 800; border-radius: 18px; cursor: pointer;
+            width: 100%; box-shadow: 0 6px 0px #4d5494;
+        }
+
+        button:active { transform: translateY(4px); box-shadow: none; }
+        #feedback { margin-top: 1rem; font-weight: 800; border-radius: 12px; padding: 10px; display: none; }
+        .correct { background: var(--success); display: block !important; }
+        .wrong { background: var(--error); display: block !important; }
+        .shake { animation: shake 0.3s ease-in-out; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+
+        #celebration { display: none; }
+        .trophy { font-size: 4rem; margin-bottom: 1rem; display: block; }
+    </style>
+</head>
+<body>
+
+    <div class="stars-container" id="stars"></div>
+    <div class="cosmic-waves-container">
+        <svg class="waves" xmlns="http://www.w3.org/2000/svg" viewBox="0 24 150 28" preserveAspectRatio="none">
+            <defs><path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" /></defs>
+            <g class="parallax">
+                <use xlink:href="#gentle-wave" x="48" y="0" />
+                <use xlink:href="#gentle-wave" x="48" y="3" />
+                <use xlink:href="#gentle-wave" x="48" y="5" />
+                <use xlink:href="#gentle-wave" x="48" y="7" />
+            </g>
+        </svg>
+    </div>
+
+    <div class="game-container" id="game-card">
+        <div id="game-ui">
+            <img src="asset/photo_2026-02-10_07-43-14-removebg-preview.png" alt="logo" height="50">
+            <h1>SET APPLICATION  <span class="grade-tag">B9.1.1.2.2</span></h1>
+            <p>B9.1.1.2.2 Apply the concept of sets to solve problems on relationship between members of rational number system and solve real life problems involving union and intersection of two sets</p>
+            <span id="q-num">1</span>/10
+            <div class="stats-row">
+                <div class="pill">STARS: <span id="score" style="color:var(--success)">0</span></div>
+                <div class="pill">STREAK: <span id="streak" style="color:var(--error)">0</span> 🔥</div>
+            </div>
+
+            <div class="question-card">
+                <span class="instruction">REAL-WORLD LOGIC</span>
+                <div id="target-number" class="number-display">Initiating mission parameters...</div>
+            </div>
+
+            <input type="text" id="user-input" placeholder="Type numerical answer..." autocomplete="off">
+            <button onclick="checkAnswer()">EXECUTE SOLUTION</button>
+            <div id="feedback"></div>
+        </div>
+
+        <div id="celebration">
+            <span class="trophy">🏆</span>
+            <h1 style="margin-bottom:10px">SET LOGIC MASTERED!</h1>
+            <p>You have successfully mapped the Rational Set relationships.</p>
+            <div class="pill" style="margin: 20px auto; display:inline-block">FINAL SCORE: <span id="final-score">0</span></div>
+            <button onclick="location.reload()">RE-LAUNCH</button>
+        </div>
+    </div>
+
+    <script>
+        const starBox = document.getElementById('stars');
+        for (let i = 0; i < 80; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.width = star.style.height = Math.random() * 3 + 'px';
+            star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
+            starBox.appendChild(star);
+        }
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(freq, type) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.5);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+        }
+
+        let score = 0, streak = 0, qCount = 0, currentAnswer = "";
+        
+        // B9.1.1.2.2 Syllabus-Specific Missions
+        const missions = [
+            { q: "In a class of 40, 25 like Math and 20 like Science. 10 like both. How many like either Math OR Science (Union)?", a: "35" },
+            { q: "Set A contains 15 elements, Set B contains 10. If the intersection has 5, how many elements are in A only?", a: "10" },
+            { q: "A survey of 30 people: 18 drink tea, 12 drink coffee, and 5 drink both. How many drink NEITHER?", a: "5" },
+            { q: "True or False: The intersection of Prime Numbers and Negative Integers is an Empty Set.", a: "true" },
+            { q: "In a group of 20 students, 12 play football and 8 play basketball. If 4 play both, how many play only football?", a: "8" },
+            { q: "n(A)=20, n(B)=30, n(A∩B)=10. Find n(A∪B).", a: "40" },
+            { q: "A set of numbers: {-2, 0, 1, 4, 5}. How many of these are in the intersection of Whole Numbers and Prime Numbers?", a: "1" },
+            { q: "If Set U={1,2,3,4,5} and Set A={2,4}, how many elements are in the complement of A?", a: "3" },
+            { q: "In a village, 50 people farm corn and 40 farm yam. 20 farm both. What is the total number of farmers?", a: "70" },
+            { q: "Is the number 0.75 a member of the intersection of Integers and Rational Numbers? (Yes/No)", a: "no" }
+        ];
+
+        function generate() {
+            if (qCount >= 10) { showCelebration(); return; }
+            const m = missions[qCount];
+            document.getElementById('target-number').innerText = m.q;
+            document.getElementById('q-num').innerText = qCount + 1;
+            currentAnswer = m.a.toLowerCase();
+            const input = document.getElementById('user-input');
+            input.value = ''; input.focus();
+            document.getElementById('feedback').style.display = 'none';
+        }
+
+        function checkAnswer() {
+            const user = document.getElementById('user-input').value.trim().toLowerCase();
+            const fb = document.getElementById('feedback');
+            const card = document.getElementById('game-card');
+
+            if (user == currentAnswer) {
+                playSound(880, 'sine');
+                score += 10; streak++; qCount++;
+                fb.innerText = "MISSION SUCCESSFUL!";
+                fb.className = "correct";
+                setTimeout(generate, 1200);
+            } else {
+                playSound(120, 'sawtooth');
+                streak = 0;
+                card.classList.add('shake');
+                fb.innerText = `CALCULATION ERROR!`;
+                fb.className = "wrong";
+                setTimeout(() => card.classList.remove('shake'), 400);
+            }
+            document.getElementById('score').innerText = score;
+            document.getElementById('streak').innerText = streak;
+        }
+
+        function showCelebration() {
+            document.getElementById('game-ui').style.display = 'none';
+            document.getElementById('celebration').style.display = 'block';
+            document.getElementById('final-score').innerText = score;
+            playSound(523, 'sine'); 
+            setTimeout(() => playSound(659, 'sine'), 150);
+            setTimeout(() => playSound(783, 'sine'), 300);
+        }
+
+        document.getElementById('user-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAnswer(); });
+        generate();
+    </script>
+</body>
+</html>
